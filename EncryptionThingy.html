@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 
 <!--
 Name: EncryptionThingy
@@ -26,9 +26,9 @@ var salt = CryptoJS.lib.WordArray.random(128/8);
 var key  = CryptoJS.PBKDF2("password", salt, { keySize: 256/32, iterations: 10 });
 
 // Encrypt
-var iv			= CryptoJS.enc.Hex.parse("101112131415161718191a1b1c1d1e1f");
-var encrypted 	= CryptoJS.AES.encrypt("You are reading a super secret message.", key, { iv: this.iv });
-var ciphertext	= encrypted.ciphertext.toString(CryptoJS.enc.Base64);
+var iv          = CryptoJS.enc.Hex.parse("101112131415161718191a1b1c1d1e1f");
+var encrypted   = CryptoJS.AES.encrypt("You are reading a super secret message.", key, { iv: this.iv });
+var ciphertext  = encrypted.ciphertext.toString(CryptoJS.enc.Base64);
 
 window.alert(ciphertext);
 
