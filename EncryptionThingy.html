@@ -11,10 +11,13 @@ Description: A Javascript driven tool for encrypting and attaching documents.
 <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/pbkdf2.js"></script>
 <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
 
-<script type="application/json" id="data">
-{"keyalgorithm":"PBKDF2WithHmacSHA1","encryptionmethod":"AES/CBC/PKCS5Padding","ciphertext":"d82Doc3eAX3RJ519bAxJB5LYJSAwgBZ+ITQBkRZ8E2QdJbdNRj2PFZ0wnwHMro4y","salt":"pwbbDpDyrQUnanYqHoinIA==","keylength":128,"iv":"2KSSDSHxUHnnMrBZ42YmhQ==","iterations":65536}
-</script>
+<form name="dataform">
+    <textarea name="datatextarea" rows="30" cols="100"></textarea>
+</form>
 
+<script type="application/json" id="data">
+{"iv":{"words":[269554195,336926231,404298267,471670303],"sigBytes":16},"salt":{"words":[-1355658254,241154730,1459968657,-971366715],"sigBytes":16},"ciphertext":"VKziGT3XxptYIEkZwHtRlYO8VGRupjMcGaqjNjOBb7aqPwypY7HfYTHULA6w9DPT","iterations":100}
+</script>
 <script type="text/javascript">
 // Larger iterations are crashing script...
 var iterations = 10;
@@ -26,24 +29,25 @@ var iv          = CryptoJS.enc.Hex.parse("101112131415161718191a1b1c1d1e1f");
 var encrypted   = CryptoJS.AES.encrypt("You are reading a super secret message.", key, { iv: this.iv });
 var ciphertext  = encrypted.ciphertext.toString(CryptoJS.enc.Base64);
 
-// window.alert(ciphertext);
-
 var jsonObj        = {};
 jsonObj.iv         = iv;
 jsonObj.salt       = salt;
 jsonObj.ciphertext = ciphertext;
 jsonObj.iterations = iterations;
 
-window.alert(JSON.stringify(jsonObj));
+// window.alert(JSON.stringify(jsonObj));
 
 // Decrypt
 var cipherParams = CryptoJS.lib.CipherParams.create({ ciphertext: CryptoJS.enc.Base64.parse(ciphertext) });
 var decrypted    = CryptoJS.AES.decrypt( cipherParams, key, { iv: this.iv });
 var plaintext    = decrypted.toString(CryptoJS.enc.Utf8);
 
-window.alert(plaintext);
+document.forms['dataform']['datatextarea'].value = plaintext;
+
 // Save this for later.
 // window.alert(document.documentElement.outerHTML);
 </script>
+
+
 </head>
 </html>
