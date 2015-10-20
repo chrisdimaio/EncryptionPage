@@ -22,15 +22,23 @@ Description: A Javascript driven tool for encrypting and attaching documents.
 // var iterations	= data.iterations
 
 // Larger iterations are crashing script...
+var iterations = 10;
 var salt = CryptoJS.lib.WordArray.random(128/8);
-var key  = CryptoJS.PBKDF2("password", salt, { keySize: 256/32, iterations: 10 });
+var key  = CryptoJS.PBKDF2("password", salt, { keySize: 256/32, iterations: this.iterations });
 
 // Encrypt
 var iv          = CryptoJS.enc.Hex.parse("101112131415161718191a1b1c1d1e1f");
 var encrypted   = CryptoJS.AES.encrypt("You are reading a super secret message.", key, { iv: this.iv });
 var ciphertext  = encrypted.ciphertext.toString(CryptoJS.enc.Base64);
 
-window.alert(ciphertext);
+// window.alert(ciphertext);
+
+var jsonObj        = {};
+jsonObj.iv         = iv;
+jsonObj.salt       = salt;
+jsonObj.ciphertext = ciphertext;
+
+window.alert(JSON.stringify(jsonObj));
 
 // Decrypt
 var cipherParams = CryptoJS.lib.CipherParams.create({ ciphertext: CryptoJS.enc.Base64.parse(ciphertext) });
