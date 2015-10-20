@@ -7,6 +7,7 @@ Description: A Javascript driven tool for encrypting and attaching documents.
 -->
 
 <html>
+<head>
 <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/pbkdf2.js"></script>
 <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
 
@@ -15,12 +16,6 @@ Description: A Javascript driven tool for encrypting and attaching documents.
 </script>
 
 <script type="text/javascript">
-// var data = JSON.parse(document.getElementById('data').innerHTML);
-
-// var keyLength 	= data.encryptionmethod
-// var ciphertext 	= data.ciphertext
-// var iterations	= data.iterations
-
 // Larger iterations are crashing script...
 var iterations = 10;
 var salt = CryptoJS.lib.WordArray.random(128/8);
@@ -47,5 +42,8 @@ var decrypted    = CryptoJS.AES.decrypt( cipherParams, key, { iv: this.iv });
 var plaintext    = decrypted.toString(CryptoJS.enc.Utf8);
 
 window.alert(plaintext);
+// Save this for later.
+// window.alert(document.documentElement.outerHTML);
 </script>
+</head>
 </html>
