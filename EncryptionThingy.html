@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+
+<!--
+Name: EncryptionThingy
+Author: Chris DiMaio
+Description: A Javascript driven tool for encrypting and attaching documents. 
+-->
+
+<html>
+<script type="application/json" id="data">
+{"keyalgorithm":"PBKDF2WithHmacSHA1","encryptionmethod":"AES/CBC/PKCS5Padding","ciphertext":"d82Doc3eAX3RJ519bAxJB5LYJSAwgBZ+ITQBkRZ8E2QdJbdNRj2PFZ0wnwHMro4y","salt":"pwbbDpDyrQUnanYqHoinIA==","keylength":128,"iv":"2KSSDSHxUHnnMrBZ42YmhQ==","iterations":65536}
+</script>
+
+<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/pbkdf2.js"></script>
+<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
+<script type="text/javascript">
+var data = JSON.parse(document.getElementById('data').innerHTML);
+
+var keyLength 	= data.encryptionmethod
+var salt 		= data.salt
+var ciphertext 	= data.ciphertext
+var iterations	= data.iterations
+
+window.alert(salt)
+
+// Larger iterations are crashing script...
+var key = CryptoJS.PBKDF2("password", salt, { keySize: 128/32, iterations: 12});
+window.alert(key)
+</script>
+</html>
