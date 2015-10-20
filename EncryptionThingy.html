@@ -32,10 +32,10 @@ var ciphertext  = encrypted.ciphertext.toString(CryptoJS.enc.Base64);
 
 window.alert(ciphertext);
 
-// Decrypt this doesn't quite work yet!
+// Decrypt
 var cipherParams = CryptoJS.lib.CipherParams.create({ ciphertext: CryptoJS.enc.Base64.parse(ciphertext) });
-var decrypted 	 = CryptoJS.AES.decrypt( cipherParams, key, { iv: this.iv });
-var plaintext 	 = decrypted.toString(CryptoJS.enc.Utf8);
+var decrypted    = CryptoJS.AES.decrypt( cipherParams, key, { iv: this.iv });
+var plaintext    = decrypted.toString(CryptoJS.enc.Utf8);
 
 window.alert(plaintext);
 </script>
