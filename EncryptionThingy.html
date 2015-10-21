@@ -8,44 +8,67 @@ Description: A Javascript driven tool for encrypting and attaching documents.
 
 <html>
 <head>
-<link rel="shortcut icon" href="http://sstatic.net/stackoverflow/img/favicon.ico">
+<link rel="shortcut icon" href="https://dl.dropboxusercontent.com/u/30063678/lock%20icon.png">
 <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/pbkdf2.js"></script>
 <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
 </head>
 
 <form name="dataform">
-    <input type="text" name="iterations" id="iterations" disabled><br>
-    <textarea id="datatextarea" rows="30" cols="100"></textarea>
+    <input type="text" name="iterations" id="iterations" disabled>
+	<input type="text" name="length" id="length" disabled><br>
+    <textarea id="datatextarea" rows="30" cols="150"></textarea>
+	<textarea id="jsondata" rows="30" cols="150"></textarea>
 </form>
 
 <script type="text/javascript">
-var MAX_ITERATIONS = 1300;
-var MIN_ITERATIONS = 1000;
 
-var iterations = Math.floor(Math.random() * (MAX_ITERATIONS - MIN_ITERATIONS) + MIN_ITERATIONS);
+function encrypt(key, plaintext, iv) {
+	var encrypted   = CryptoJS.AES.encrypt(plaintext, key, { iv: iv });
+	return encrypted.ciphertext.toString(CryptoJS.enc.Base64);
+}
+
+function generateKey(passphrase, salt, iterations) {
+	return CryptoJS.PBKDF2(passphrase, salt, { keySize: 256/32, iterations: iterations });
+}
+
+function generateIterations() {
+	var MAX_ITERATIONS = 2000;
+	var MIN_ITERATIONS = 1000;
+
+	return Math.floor(Math.random() * (MAX_ITERATIONS - MIN_ITERATIONS) + MIN_ITERATIONS);
+}
+
+function generateIV() {
+	return CryptoJS.lib.WordArray.random(128/8);
+}
+
+var data = document.documentElement.outerHTML + document.documentElement.outerHTML + document.documentElement.outerHTML
+	+ document.documentElement.outerHTML + document.documentElement.outerHTML + document.documentElement.outerHTML
+	+ document.documentElement.outerHTML + document.documentElement.outerHTML + document.documentElement.outerHTML
+	+ document.documentElement.outerHTML + document.documentElement.outerHTML + document.documentElement.outerHTML
+	+ document.documentElement.outerHTML + document.documentElement.outerHTML + document.documentElement.outerHTML;
+var iterations = generateIterations();
+var iv         = generateIV();
 var salt       = CryptoJS.lib.WordArray.random(128/8);
-var key        = CryptoJS.PBKDF2("password", salt, { keySize: 256/32, iterations: this.iterations });
 
-// Encrypt
-var iv          = CryptoJS.lib.WordArray.random(128/8);
-var encrypted   = CryptoJS.AES.encrypt(document.documentElement.outerHTML, key, { iv: this.iv });
-var ciphertext  = encrypted.ciphertext.toString(CryptoJS.enc.Base64);
+var key        = generateKey("passphrase", salt, iterations);
+var ciphertext = encrypt(key, data, iv);
 
 var jsonObj        = {};
-jsonObj.iv         = iv;
-jsonObj.salt       = salt;
 jsonObj.ciphertext = ciphertext;
 jsonObj.iterations = iterations;
-
-// window.alert(JSON.stringify(jsonObj));
+jsonObj.iv         = iv;
+jsonObj.salt       = salt;
 
 // Decrypt
-var cipherParams = CryptoJS.lib.CipherParams.create({ ciphertext: CryptoJS.enc.Base64.parse(ciphertext) });
-var decrypted    = CryptoJS.AES.decrypt( cipherParams, key, { iv: this.iv });
+var cipherParams = CryptoJS.lib.CipherParams.create({ ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ciphertext) });
+var decrypted    = CryptoJS.AES.decrypt( cipherParams, key, { iv: jsonObj.iv });
 var plaintext    = decrypted.toString(CryptoJS.enc.Utf8);
 
-document.forms['dataform']['iterations'].value = iterations;
+document.forms['dataform']['iterations'].value   = "Iterations: " + iterations;
+document.forms['dataform']['length'].value       = "Character count: " + plaintext.length;
 document.forms['dataform']['datatextarea'].value = plaintext;
+document.forms['dataform']['jsondata'].value = JSON.stringify(jsonObj);
 
 // Save this for later.
 // window.alert(document.documentElement.outerHTML);
