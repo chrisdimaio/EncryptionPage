@@ -23,8 +23,8 @@ var MAX_ITERATIONS = 1300;
 var MIN_ITERATIONS = 1000;
 
 var iterations = Math.floor(Math.random() * (MAX_ITERATIONS - MIN_ITERATIONS) + MIN_ITERATIONS);
-var salt = CryptoJS.lib.WordArray.random(128/8);
-var key  = CryptoJS.PBKDF2("password", salt, { keySize: 256/32, iterations: this.iterations });
+var salt       = CryptoJS.lib.WordArray.random(128/8);
+var key        = CryptoJS.PBKDF2("password", salt, { keySize: 256/32, iterations: this.iterations });
 
 // Encrypt
 var iv          = CryptoJS.lib.WordArray.random(128/8);
