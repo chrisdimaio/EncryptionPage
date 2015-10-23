@@ -82,7 +82,7 @@ var plaintext = decrypt(PASS_PHRASE, jsonObj);
 document.forms['dataform']['iterations'].value   = "Iterations: " + jsonObj.iterations;
 document.forms['dataform']['length'].value       = "Character count: " + plaintext.length;
 document.forms['dataform']['datatextarea'].value = plaintext;
-document.forms['dataform']['jsondata'].value = JSON.stringify(jsonObj);
+document.forms['dataform']['jsondata'].value     = JSON.stringify(jsonObj);
 
 // Save this for later.
 // window.alert(document.documentElement.outerHTML);
