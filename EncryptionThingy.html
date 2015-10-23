@@ -21,10 +21,43 @@ Description: A Javascript driven tool for encrypting and attaching documents.
 </form>
 
 <script type="text/javascript">
+var PASS_PHRASE = "hola chica!";
 
-function encrypt(key, plaintext, iv) {
-	var encrypted   = CryptoJS.AES.encrypt(plaintext, key, { iv: iv });
-	return encrypted.ciphertext.toString(CryptoJS.enc.Base64);
+function encrypt(passphrase, plaintext) {
+
+	var iterations = generateIterations();
+	var iv         = return CryptoJS.lib.WordArray.random(128/8);
+	var salt       = CryptoJS.lib.WordArray.random(128/8);
+	var key        = generateKey(passphrase, salt, iterations);
+	var encrypted  = CryptoJS.AES.encrypt(plaintext, key, { iv: iv });
+	
+	var cipherObject = {};
+	cipherObject.cipherText  = encrypted.ciphertext.toString(CryptoJS.enc.Base64);
+	cipherObject.contentType = getContentType(plaintext);
+	cipherObject.iterations  = iterations;
+	cipherObject.iv          = iv;
+	cipherObject.salt        = salt;
+	
+	return cipherObject;
+}
+
+function decrypt(passphrase, cipherObject) {
+	var cipherText = CryptoJS.enc.Base64.parse(cipherObject.cipherText);
+	var iterations = cipherObject.iterations;
+	var iv         = cipherObject.iv;
+	var salt       = cipherObject.salt;
+
+	var key          = generateKey(PASS_PHRASE, salt, iterations);
+	var cipherParams = CryptoJS.lib.CipherParams.create({ ciphertext: cipherText });
+	var decrypted    = CryptoJS.AES.decrypt( cipherParams, key, { iv: iv });
+	
+	// This will change when we handle other content types then 'text/plain'.
+	return decrypted.toString(CryptoJS.enc.Utf8);
+}
+
+function getContentType(data) {
+	// This is the only content type we will deal with for now.
+	return "text/plain";
 }
 
 function generateKey(passphrase, salt, iterations) {
@@ -39,33 +72,14 @@ function generateIterations() {
 }
 
 function generateIV() {
-	return CryptoJS.lib.WordArray.random(128/8);
+	return CryptoJS.lib.WordArray.random(256/8);
 }
 
-var data = document.documentElement.outerHTML + document.documentElement.outerHTML + document.documentElement.outerHTML
-	+ document.documentElement.outerHTML + document.documentElement.outerHTML + document.documentElement.outerHTML
-	+ document.documentElement.outerHTML + document.documentElement.outerHTML + document.documentElement.outerHTML
-	+ document.documentElement.outerHTML + document.documentElement.outerHTML + document.documentElement.outerHTML
-	+ document.documentElement.outerHTML + document.documentElement.outerHTML + document.documentElement.outerHTML;
-var iterations = generateIterations();
-var iv         = generateIV();
-var salt       = CryptoJS.lib.WordArray.random(128/8);
+var data      = document.documentElement.outerHTML;
+var jsonObj   = encrypt(PASS_PHRASE, data);
+var plaintext = decrypt(PASS_PHRASE, jsonObj);
 
-var key        = generateKey("passphrase", salt, iterations);
-var ciphertext = encrypt(key, data, iv);
-
-var jsonObj        = {};
-jsonObj.ciphertext = ciphertext;
-jsonObj.iterations = iterations;
-jsonObj.iv         = iv;
-jsonObj.salt       = salt;
-
-// Decrypt
-var cipherParams = CryptoJS.lib.CipherParams.create({ ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ciphertext) });
-var decrypted    = CryptoJS.AES.decrypt( cipherParams, key, { iv: jsonObj.iv });
-var plaintext    = decrypted.toString(CryptoJS.enc.Utf8);
-
-document.forms['dataform']['iterations'].value   = "Iterations: " + iterations;
+document.forms['dataform']['iterations'].value   = "Iterations: " + jsonObj.iterations;
 document.forms['dataform']['length'].value       = "Character count: " + plaintext.length;
 document.forms['dataform']['datatextarea'].value = plaintext;
 document.forms['dataform']['jsondata'].value = JSON.stringify(jsonObj);
