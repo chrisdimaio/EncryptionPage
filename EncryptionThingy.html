@@ -33,7 +33,7 @@ function encrypt(passphrase, plaintext) {
 	var key        = generateKey(passphrase, salt, iterations);
 	var encrypted  = CryptoJS.AES.encrypt(plaintext, key, { iv: iv });
 	
-	var cipherObject = {};
+	var cipherObject         = {};
 	cipherObject.cipherText  = encrypted.ciphertext.toString(CryptoJS.enc.Base64);
 	cipherObject.contentType = getContentType(plaintext);
 	cipherObject.iterations  = iterations;
@@ -66,8 +66,8 @@ function generateKey(passphrase, salt, iterations) {
 	return CryptoJS.PBKDF2(passphrase, salt, { keySize: 256/32, iterations: iterations });
 }
 
-var data      = "You are reading a super secret message!";
-var jsonObj   = encrypt(PASS_PHRASE, data);
+var testData      = "You are reading a super secret message!";
+var jsonObj   = encrypt(PASS_PHRASE, testData);
 var plaintext = decrypt(PASS_PHRASE, jsonObj);
 
 document.forms['dataform']['iterations'].value   = "Iterations: " + jsonObj.iterations;
