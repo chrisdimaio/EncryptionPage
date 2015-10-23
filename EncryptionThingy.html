@@ -66,7 +66,7 @@ function generateKey(passphrase, salt, iterations) {
 	return CryptoJS.PBKDF2(passphrase, salt, { keySize: 256/32, iterations: iterations });
 }
 
-var testData      = "You are reading a super secret message!";
+var testData  = "You are reading a super secret message!";
 var jsonObj   = encrypt(PASS_PHRASE, testData);
 var plaintext = decrypt(PASS_PHRASE, jsonObj);
 
