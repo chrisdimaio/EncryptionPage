@@ -21,11 +21,13 @@ Description: A Javascript driven tool for encrypting and attaching documents.
 </form>
 
 <script type="text/javascript">
-var PASS_PHRASE = "hola chica!";
+var PASS_PHRASE    = "hola chica!";
 
 function encrypt(passphrase, plaintext) {
+	var MAX_ITERATIONS = 2000;
+	var MIN_ITERATIONS = 1000;
 
-	var iterations = generateIterations();
+	var iterations = Math.floor(Math.random() * (MAX_ITERATIONS - MIN_ITERATIONS) + MIN_ITERATIONS);
 	var iv         = CryptoJS.lib.WordArray.random(128/8);
 	var salt       = CryptoJS.lib.WordArray.random(128/8);
 	var key        = generateKey(passphrase, salt, iterations);
@@ -64,14 +66,7 @@ function generateKey(passphrase, salt, iterations) {
 	return CryptoJS.PBKDF2(passphrase, salt, { keySize: 256/32, iterations: iterations });
 }
 
-function generateIterations() {
-	var MAX_ITERATIONS = 2000;
-	var MIN_ITERATIONS = 1000;
-
-	return Math.floor(Math.random() * (MAX_ITERATIONS - MIN_ITERATIONS) + MIN_ITERATIONS);
-}
-
-var data      = document.documentElement.outerHTML;
+var data      = "You are reading a super secret message!";
 var jsonObj   = encrypt(PASS_PHRASE, data);
 var plaintext = decrypt(PASS_PHRASE, jsonObj);
 
@@ -85,6 +80,6 @@ document.forms['dataform']['jsondata'].value     = JSON.stringify(jsonObj);
 </script>
 
 <script type="application/json" id="data">
-{"iv":{"words":[34995121,-1145890036,-1719900697,250333953],"sigBytes":16},"salt":{"words":[-1240621720,76485651,1099449494,1504808153],"sigBytes":16},"ciphertext":"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","iterations":1173}
+{"cipherText":"dAY0fF2j41S78IJvXQDcfjAsOO2NHZpZm+BzQMBW51ufhUqOrF1xoIuxas6F8Z4A","contentType":"text/plain","iterations":1689,"iv":{"words":[1562286809,1736175072,846784569,-1677142640],"sigBytes":16},"salt":{"words":[1230117647,405340576,-1412777500,326205294],"sigBytes":16}}
 </script>
 </html>
