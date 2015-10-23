@@ -26,7 +26,7 @@ var PASS_PHRASE = "hola chica!";
 function encrypt(passphrase, plaintext) {
 
 	var iterations = generateIterations();
-	var iv         = return CryptoJS.lib.WordArray.random(128/8);
+	var iv         = CryptoJS.lib.WordArray.random(128/8);
 	var salt       = CryptoJS.lib.WordArray.random(128/8);
 	var key        = generateKey(passphrase, salt, iterations);
 	var encrypted  = CryptoJS.AES.encrypt(plaintext, key, { iv: iv });
@@ -69,10 +69,6 @@ function generateIterations() {
 	var MIN_ITERATIONS = 1000;
 
 	return Math.floor(Math.random() * (MAX_ITERATIONS - MIN_ITERATIONS) + MIN_ITERATIONS);
-}
-
-function generateIV() {
-	return CryptoJS.lib.WordArray.random(256/8);
 }
 
 var data      = document.documentElement.outerHTML;
