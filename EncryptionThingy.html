@@ -8,20 +8,31 @@ Description: A Javascript driven tool for encrypting and attaching documents.
 
 <html>
 <head>
+<meta charset="UTF-8">
 <link rel="shortcut icon" href="https://dl.dropboxusercontent.com/u/30063678/lock%20icon.png">
 <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/pbkdf2.js"></script>
 <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
 </head>
 
 <form name="dataform">
-    <input type="text" name="iterations" id="iterations" disabled>
-	<input type="text" name="length" id="length" disabled><br>
-    <textarea id="datatextarea" rows="30" cols="150"></textarea>
-	<textarea id="jsondata" rows="30" cols="150"></textarea>
+	Passphrase: 
+	<input type="text" id="passphrase" value="hola chica!">
+	<button type="button" onclick="decryptMessage()">Show message</button><br><br>
+    <textarea id="textdataarea" rows="30" cols="150"></textarea>
 </form>
 
+<script type="application/json" id="data">
+{"cipherText":"Cdj9Vn8q/PrT4ElNwk15LLwEs6vOQkUI6MYEAw+ht6FBn4zAUJxWpywCcQBap2UT","contentType":"text/plain","iterations":1049,"iv":{"words":[-1627922503,-610406710,1999703821,-646380791],"sigBytes":16},"salt":{"words":[-1463265489,1908683773,-1465396237,1091484670],"sigBytes":16}}
+</script>
+
 <script type="text/javascript">
-var PASS_PHRASE    = "hola chica!";
+function decryptMessage() {
+	// var PASS_PHRASE = "hola chica!";
+	
+	var passphrase = document.forms['dataform']['passphrase'].value;
+	var plaintext = decrypt(passphrase, JSON.parse(document.getElementById('data').innerHTML));
+	document.forms['dataform']['textdataarea'].value = plaintext;
+}
 
 function encrypt(passphrase, plaintext) {
 	var MAX_ITERATIONS = 2000;
@@ -48,8 +59,8 @@ function decrypt(passphrase, cipherObject) {
 	var iterations = cipherObject.iterations;
 	var iv         = cipherObject.iv;
 	var salt       = cipherObject.salt;
-
-	var key          = generateKey(PASS_PHRASE, salt, iterations);
+	
+	var key          = generateKey(passphrase, salt, iterations);
 	var cipherParams = CryptoJS.lib.CipherParams.create({ ciphertext: cipherText });
 	var decrypted    = CryptoJS.AES.decrypt( cipherParams, key, { iv: iv });
 	
@@ -66,20 +77,29 @@ function generateKey(passphrase, salt, iterations) {
 	return CryptoJS.PBKDF2(passphrase, salt, { keySize: 256/32, iterations: iterations });
 }
 
-var testData  = "You are reading a super secret message!";
-var jsonObj   = encrypt(PASS_PHRASE, testData);
-var plaintext = decrypt(PASS_PHRASE, jsonObj);
+// decryptMessage();
 
-document.forms['dataform']['iterations'].value   = "Iterations: " + jsonObj.iterations;
-document.forms['dataform']['length'].value       = "Character count: " + plaintext.length;
-document.forms['dataform']['datatextarea'].value = plaintext;
-document.forms['dataform']['jsondata'].value     = JSON.stringify(jsonObj);
+// Unused code //
+// <form name="dataform">
+//    <input type="text" name="iterations" id="iterations" disabled>
+//	<input type="text" name="length" id="length" disabled><br>
+//    <textarea id="datatextarea" rows="30" cols="150"></textarea>
+//	<textarea id="jsondata" rows="30" cols="150"></textarea>
+// </form>
+
+// var testData  = "You are reading a super secret message!";
+// var jsonObj   = encrypt(PASS_PHRASE, testData);
+// var plaintext = decrypt(PASS_PHRASE, JSON.parse(document.getElementById('data').innerHTML));
+// var plaintext = decrypt(PASS_PHRASE, jsonObj);
+
+//document.forms['dataform']['length'].value       = "Character count: " + plaintext.length;
+// document.forms['dataform']['datatextarea'].value = plaintext;
+
+// document.forms['dataform']['iterations'].value   = "Iterations: " + jsonObj.iterations;
+// document.forms['dataform']['jsondata'].value     = JSON.stringify(jsonObj);
 
 // Save this for later.
-// window.alert(document.documentElement.outerHTML);
-</script>
-
-<script type="application/json" id="data">
-{"cipherText":"dAY0fF2j41S78IJvXQDcfjAsOO2NHZpZm+BzQMBW51ufhUqOrF1xoIuxas6F8Z4A","contentType":"text/plain","iterations":1689,"iv":{"words":[1562286809,1736175072,846784569,-1677142640],"sigBytes":16},"salt":{"words":[1230117647,405340576,-1412777500,326205294],"sigBytes":16}}
+// window.alert(window.data);
+// window.alert(document.getElementById('data').innerHTML);
 </script>
 </html>
