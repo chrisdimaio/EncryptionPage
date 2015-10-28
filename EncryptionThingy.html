@@ -26,9 +26,7 @@ Description: A Javascript driven tool for encrypting and attaching documents.
 </script>
 
 <script type="text/javascript">
-function decryptMessage() {
-	// var PASS_PHRASE = "hola chica!";
-	
+function decryptMessage() {	
 	var passphrase = document.forms['dataform']['passphrase'].value;
 	var plaintext = decrypt(passphrase, JSON.parse(document.getElementById('data').innerHTML));
 	document.forms['dataform']['textdataarea'].value = plaintext;
