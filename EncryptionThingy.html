@@ -5,7 +5,6 @@ Name: EncryptionThingy
 Author: Chris DiMaio
 Description: A Javascript driven tool for encrypting and attaching documents. 
 -->
-
 <html>
 <head>
 <meta charset="UTF-8">
@@ -17,15 +16,49 @@ Description: A Javascript driven tool for encrypting and attaching documents.
 <form name="dataform">
 	Passphrase: 
 	<input type="text" id="passphrase" value="hola chica!">
-	<button type="button" onclick="decryptMessage()">Show message</button><br><br>
+	<button type="button" onclick="decryptMessage()">Show Message</button>
+	<button type="button" onclick="createNewDocument()">New Document</button><br><br>
     <textarea id="textdataarea" rows="30" cols="150"></textarea>
 </form>
 
-<script type="application/json" id="data">
-{"cipherText":"Cdj9Vn8q/PrT4ElNwk15LLwEs6vOQkUI6MYEAw+ht6FBn4zAUJxWpywCcQBap2UT","contentType":"text/plain","iterations":1049,"iv":{"words":[-1627922503,-610406710,1999703821,-646380791],"sigBytes":16},"salt":{"words":[-1463265489,1908683773,-1465396237,1091484670],"sigBytes":16}}
-</script>
+<script type="application/json" id="data">{"cipherText":"Cdj9Vn8q/PrT4ElNwk15LLwEs6vOQkUI6MYEAw+ht6FBn4zAUJxWpywCcQBap2UT","contentType":"text/plain","iterations":1049,"iv":{"words":[-1627922503,-610406710,1999703821,-646380791],"sigBytes":16},"salt":{"words":[-1463265489,1908683773,-1465396237,1091484670],"sigBytes":16}}</script>
 
 <script type="text/javascript">
+function createNewDocument() {
+	var DATA_ID = "id=\"data\">";
+
+	var PAGE_HEADER = "<!DOCTYPE html>\n" + 
+		"\n" + 
+		"<!--\n" + 
+		"Name: EncryptionThingy\n" + 
+		"Author: Chris DiMaio\n" + 
+		"Description: A Javascript driven tool for encrypting and attaching documents. \n" + 
+		"\-\->\n";
+	
+	var oldPageSource = document.documentElement.outerHTML;
+	var dataStartPos = oldPageSource.indexOf(DATA_ID) + DATA_ID.length;
+	var dataEndPos = oldPageSource.indexOf("\</script\>", dataStartPos);
+	
+	var oldData = oldPageSource.substring(dataStartPos, dataEndPos);
+	var newData = encryptMessage();
+	var newPageSource = PAGE_HEADER + oldPageSource.replace(oldData, newData);
+	
+	var element = document.createElement('a');
+	element.setAttribute('href', 'data:text/html;charset=utf-8,' + encodeURIComponent(newPageSource));
+	element.setAttribute('download', "New Document.html");
+	element.style.display = 'none';
+	document.body.appendChild(element);
+	element.click();
+	document.body.removeChild(element);
+}
+
+function encryptMessage() {
+	var passphrase = document.forms['dataform']['passphrase'].value;
+	var plaintext  = document.forms['dataform']['textdataarea'].value;
+	
+	return JSON.stringify(encrypt(passphrase, plaintext));
+}
+
 function decryptMessage() {	
 	var passphrase = document.forms['dataform']['passphrase'].value;
 	var plaintext = decrypt(passphrase, JSON.parse(document.getElementById('data').innerHTML));
@@ -99,5 +132,6 @@ function generateKey(passphrase, salt, iterations) {
 // Save this for later.
 // window.alert(window.data);
 // window.alert(document.getElementById('data').innerHTML);
+//window.open('data:text/html;charset=utf-8,' + newPageSource);
 </script>
 </html>
